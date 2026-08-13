@@ -217,7 +217,9 @@ h1 span {
     transform 0.2s ease;
 }
 
-/* Download */
+/* =========================
+   DOWNLOAD BUTTON
+========================= */
 
 .download-button {
   border: 2px solid #111;
@@ -233,18 +235,22 @@ h1 span {
   transform: translateY(-2px);
 }
 
-/* Share */
+/* =========================
+   SHARE BUTTON
+========================= */
 
 .share-button {
+  margin-top: 8px;
+
   border: 2px solid #111;
 
-  background: transparent;
-  color: #111;
+  background: #111;
+  color: #f1eee5;
 }
 
 .share-button:hover {
-  background: #111;
-  color: #f1eee5;
+  background: transparent;
+  color: #111;
 
   transform: translateY(-2px);
 }
@@ -259,13 +265,15 @@ h1 span {
 }
 
 .builder-card {
+  --card-padding: 22px;
+
   position: relative;
 
   width: min(80vw, 480px);
 
   aspect-ratio: 0.72;
 
-  padding: 22px;
+  padding: var(--card-padding);
 
   background: #006B45;
   color: #f1eee5;
@@ -276,13 +284,26 @@ h1 span {
   flex-direction: column;
 }
 
+/* =========================
+   CARD HEADER
+========================= */
+
 .card-top {
   display: flex;
   flex-direction: column;
   gap: 3px;
 
-  margin: -22px -22px 18px -22px;
-  padding: 9px 22px;
+  /*
+    Always match the card's actual padding.
+    This prevents the header from becoming
+    wider than the card on smaller screens.
+  */
+  margin:
+    calc(-1 * var(--card-padding))
+    calc(-1 * var(--card-padding))
+    18px;
+
+  padding: 9px var(--card-padding);
 
   background: #006B45;
   color: #FFD900;
@@ -310,6 +331,10 @@ h1 span {
   letter-spacing: 0.18em;
   opacity: 0.85;
 }
+
+/* =========================
+   PHOTO
+========================= */
 
 .photo-container {
   width: 100%;
@@ -498,9 +523,11 @@ h1 span {
   }
 
   .builder-card {
+    --card-padding: 18px;
+
     width: calc(100vw - 36px);
 
-    padding: 18px;
+    padding: var(--card-padding);
 
     box-shadow: 9px 9px 0 #F5007D;
   }
@@ -520,36 +547,4 @@ h1 span {
   .card-bottom {
     font-size: 0.55rem;
   }
-}
-
-/* =========================
-   SHARE BUTTON
-========================= */
-
-.share-button {
-  display: block;
-
-  width: 100%;
-
-  margin-top: 8px;
-
-  padding: 15px 20px;
-
-  border: 2px solid #111;
-
-  background: #111;
-
-  color: #f1eee5;
-
-  font-weight: 700;
-
-  cursor: pointer;
-
-  transition: 0.2s ease;
-}
-
-.share-button:hover {
-  background: transparent;
-  color: #111;
-  transform: translateY(-2px);
 }
