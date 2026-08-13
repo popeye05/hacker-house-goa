@@ -23,9 +23,9 @@ function App() {
   const [builderClass, setBuilderClass] = useState("");
   const [isSharing, setIsSharing] = useState(false);
 
-  // -----------------------------
+  // ============================================================
   // HANDLE IMAGE UPLOAD
-  // -----------------------------
+  // ============================================================
 
   const handleFile = async (event) => {
     const file = event.target.files?.[0];
@@ -75,9 +75,9 @@ function App() {
     }
   };
 
-  // -----------------------------
+  // ============================================================
   // LOAD IMAGE
-  // -----------------------------
+  // ============================================================
 
   const loadImage = (src) =>
     new Promise((resolve, reject) => {
@@ -89,9 +89,9 @@ function App() {
       image.src = src;
     });
 
-  // -----------------------------
+  // ============================================================
   // COVER IMAGE
-  // -----------------------------
+  // ============================================================
 
   const drawCoverImage = (
     ctx,
@@ -104,7 +104,8 @@ function App() {
     const imageRatio =
       image.width / image.height;
 
-    const boxRatio = width / height;
+    const boxRatio =
+      width / height;
 
     let sourceWidth;
     let sourceHeight;
@@ -113,6 +114,7 @@ function App() {
 
     if (imageRatio > boxRatio) {
       sourceHeight = image.height;
+
       sourceWidth =
         image.height * boxRatio;
 
@@ -122,6 +124,7 @@ function App() {
       sourceY = 0;
     } else {
       sourceWidth = image.width;
+
       sourceHeight =
         image.width / boxRatio;
 
@@ -144,9 +147,70 @@ function App() {
     );
   };
 
-  // -----------------------------
+  // ============================================================
+  // WRAP TEXT INTO MULTIPLE LINES
+  // ============================================================
+
+  const wrapText = (
+    ctx,
+    text,
+    maxWidth
+  ) => {
+    const words = text.split(" ");
+    const lines = [];
+
+    let currentLine = "";
+
+    for (const word of words) {
+      const testLine = currentLine
+        ? `${currentLine} ${word}`
+        : word;
+
+      const testWidth =
+        ctx.measureText(testLine).width;
+
+      if (
+        testWidth <= maxWidth ||
+        currentLine === ""
+      ) {
+        currentLine = testLine;
+      } else {
+        lines.push(currentLine);
+        currentLine = word;
+      }
+    }
+
+    if (currentLine) {
+      lines.push(currentLine);
+    }
+
+    return lines;
+  };
+
+  // ============================================================
+  // DRAW MULTI-LINE TEXT
+  // ============================================================
+
+  const drawWrappedText = (
+    ctx,
+    lines,
+    x,
+    firstBaseline,
+    lineHeight
+  ) => {
+    lines.forEach((line, index) => {
+      ctx.fillText(
+        line,
+        x,
+        firstBaseline +
+          index * lineHeight
+      );
+    });
+  };
+
+  // ============================================================
   // GENERATE FINAL CARD
-  // -----------------------------
+  // ============================================================
 
   const createCardBlob = async () => {
     if (!imageBlob) return null;
@@ -168,6 +232,10 @@ function App() {
       );
     }
 
+    // ==========================================================
+    // LOAD USER IMAGE
+    // ==========================================================
+
     const imageUrl =
       URL.createObjectURL(imageBlob);
 
@@ -176,9 +244,9 @@ function App() {
 
     URL.revokeObjectURL(imageUrl);
 
-    // -----------------------------
+    // ==========================================================
     // BACKGROUND
-    // -----------------------------
+    // ==========================================================
 
     ctx.fillStyle = "#006B45";
 
@@ -189,9 +257,9 @@ function App() {
       height
     );
 
-    // -----------------------------
+    // ==========================================================
     // HEADER
-    // -----------------------------
+    // ==========================================================
 
     ctx.fillStyle = "#006B45";
 
@@ -202,8 +270,15 @@ function App() {
       100
     );
 
+    // ==========================================================
+    // LEFT HH
+    // ==========================================================
+
     ctx.fillStyle = "#FFD900";
-    ctx.font = "bold 30px Arial";
+
+    ctx.font =
+      "bold 30px Arial";
+
     ctx.textAlign = "left";
 
     ctx.fillText(
@@ -211,6 +286,10 @@ function App() {
       55,
       50
     );
+
+    // ==========================================================
+    // RIGHT GOA '26
+    // ==========================================================
 
     ctx.textAlign = "right";
 
@@ -220,17 +299,18 @@ function App() {
       50
     );
 
-    // -----------------------------
+    // ==========================================================
     // HH GOA LOGO
-    // -----------------------------
+    // ==========================================================
 
     const logo =
       await loadImage(hhGoaLogo);
 
-    const logoH = 56;
+    const logoH = 70;
 
     const logoW =
-      (logo.width / logo.height) *
+      (logo.width /
+        logo.height) *
       logoH;
 
     const logoX =
@@ -249,13 +329,17 @@ function App() {
       logoH
     );
 
-    // -----------------------------
-    // DATE
-    // -----------------------------
+    // ==========================================================
+    // HEADER DATE
+    // ==========================================================
 
     ctx.fillStyle = "#FFD900";
-    ctx.font = "bold 20px Arial";
+
+    ctx.font =
+      "bold 20px Arial";
+
     ctx.globalAlpha = 0.85;
+
     ctx.textAlign = "left";
 
     ctx.fillText(
@@ -266,14 +350,19 @@ function App() {
 
     ctx.globalAlpha = 1;
 
-    // -----------------------------
+    // ==========================================================
     // PHOTO
-    // -----------------------------
+    // ==========================================================
 
     const photoX = 55;
+
     const photoY = 120;
-    const photoWidth = width - 110;
-    const photoHeight = photoWidth;
+
+    const photoWidth =
+      width - 110;
+
+    const photoHeight =
+      photoWidth;
 
     drawCoverImage(
       ctx,
@@ -284,79 +373,173 @@ function App() {
       photoHeight
     );
 
-    // -----------------------------
-    // INFORMATION
-    // -----------------------------
+    // ==========================================================
+    // INFORMATION AREA
+    // ==========================================================
 
     const infoY =
-      photoY + photoHeight + 70;
+      photoY +
+      photoHeight +
+      70;
 
+    const infoX = 55;
+
+    const infoMaxWidth =
+      width - 110;
+
+    // ==========================================================
     // NAME
+    // ==========================================================
 
     ctx.fillStyle = "#FFD900";
-    ctx.font = "bold 68px Arial";
+
+    ctx.font =
+      "bold 68px Arial";
+
     ctx.textAlign = "left";
 
     const displayName = (
       name || "YOUR NAME"
     ).toUpperCase();
 
-    ctx.fillText(
-      displayName,
-      55,
-      infoY
+    // ----------------------------------------------------------
+    // Determine how many lines the name needs.
+    // ----------------------------------------------------------
+
+    const nameLines =
+      wrapText(
+        ctx,
+        displayName,
+        infoMaxWidth
+      );
+
+    // ----------------------------------------------------------
+    // Name line height
+    // ----------------------------------------------------------
+
+    const nameLineHeight = 70;
+
+    // ----------------------------------------------------------
+    // Draw the name.
+    // ----------------------------------------------------------
+
+    drawWrappedText(
+      ctx,
+      nameLines,
+      infoX,
+      infoY,
+      nameLineHeight
     );
 
-    // STACK
+    // ----------------------------------------------------------
+    // Calculate the bottom of the name.
+    // ----------------------------------------------------------
 
-    ctx.font = "bold 26px Arial";
+    const nameBottom =
+      infoY +
+      (nameLines.length - 1) *
+        nameLineHeight;
+
+    // ==========================================================
+    // STACK
+    // ==========================================================
+
+    const stackY =
+      nameBottom + 45;
+
+    ctx.font =
+      "bold 26px Arial";
+
     ctx.fillStyle =
       "rgba(255,255,255,0.65)";
 
+    const displayStack = (
+      stack || "YOUR STACK / ROLE"
+    ).toUpperCase();
+
     ctx.fillText(
-      (
-        stack || "YOUR STACK / ROLE"
-      ).toUpperCase(),
-      55,
-      infoY + 45
+      displayStack,
+      infoX,
+      stackY
     );
 
+    // ==========================================================
     // BUILDER CLASS
+    // ==========================================================
 
     const classText =
-      builderClass || "BUILDER CLASS";
+      builderClass ||
+      "BUILDER CLASS";
 
-    ctx.font = "bold 25px Arial";
+    ctx.font =
+      "bold 25px Arial";
 
     const classWidth =
-      ctx.measureText(classText).width +
-      40;
+      ctx.measureText(
+        classText
+      ).width + 40;
+
+    const classHeight = 52;
+
+    const classY =
+      stackY + 35;
 
     ctx.fillStyle = "#F5007D";
 
     ctx.fillRect(
-      55,
-      infoY + 80,
+      infoX,
+      classY,
       classWidth,
-      52
+      classHeight
     );
 
-    ctx.fillStyle = "#f1eee5";
+    ctx.fillStyle =
+      "#f1eee5";
+
+    ctx.textAlign = "left";
 
     ctx.fillText(
       classText,
-      75,
-      infoY + 115
+      infoX + 20,
+      classY + 35
     );
 
-    // -----------------------------
+    // ==========================================================
     // FOOTER
-    // -----------------------------
+    // ==========================================================
 
     ctx.fillStyle = "#FFD900";
-    ctx.font = "bold 21px Arial";
 
-    const footerY = height - 150;
+    ctx.font =
+      "bold 21px Arial";
+
+    // ----------------------------------------------------------
+    // Calculate where the content actually ends.
+    // ----------------------------------------------------------
+
+    const classBottom =
+      classY + classHeight;
+
+    // ----------------------------------------------------------
+    // Keep a safe gap between the Builder Class
+    // and the footer.
+    // ----------------------------------------------------------
+
+    const minimumFooterY =
+      classBottom + 55;
+
+    const normalFooterY =
+      height - 60;
+
+    const footerY =
+      Math.max(
+        normalFooterY,
+        minimumFooterY
+      );
+
+    // ----------------------------------------------------------
+    // LEFT FOOTER
+    // ----------------------------------------------------------
 
     ctx.textAlign = "left";
 
@@ -365,6 +548,10 @@ function App() {
       55,
       footerY
     );
+
+    // ----------------------------------------------------------
+    // RIGHT FOOTER
+    // ----------------------------------------------------------
 
     ctx.textAlign = "right";
 
@@ -376,23 +563,25 @@ function App() {
 
     ctx.textAlign = "left";
 
-    // -----------------------------
+    // ==========================================================
     // RETURN PNG
-    // -----------------------------
+    // ==========================================================
 
-    return new Promise((resolve) => {
-      canvas.toBlob(
-        (blob) => {
-          resolve(blob);
-        },
-        "image/png"
-      );
-    });
+    return new Promise(
+      (resolve) => {
+        canvas.toBlob(
+          (blob) => {
+            resolve(blob);
+          },
+          "image/png"
+        );
+      }
+    );
   };
 
-  // -----------------------------
+  // ============================================================
   // DOWNLOAD
-  // -----------------------------
+  // ============================================================
 
   const generateCard = async () => {
     if (!imageBlob) return;
@@ -405,6 +594,7 @@ function App() {
         alert(
           "Couldn't generate the image."
         );
+
         return;
       }
 
@@ -439,12 +629,17 @@ function App() {
     }
   };
 
-  // -----------------------------
+  // ============================================================
   // SHARE TO X
-  // -----------------------------
+  // ============================================================
 
   const shareToX = async () => {
-    if (!imageBlob || isSharing) return;
+    if (
+      !imageBlob ||
+      isSharing
+    ) {
+      return;
+    }
 
     try {
       setIsSharing(true);
@@ -458,7 +653,9 @@ function App() {
         );
       }
 
-      // Convert PNG to base64 data URL
+      // ========================================================
+      // CONVERT PNG TO BASE64 DATA URL
+      // ========================================================
 
       const dataUrl =
         await new Promise(
@@ -467,15 +664,22 @@ function App() {
               new FileReader();
 
             reader.onload = () =>
-              resolve(reader.result);
+              resolve(
+                reader.result
+              );
 
-            reader.onerror = reject;
+            reader.onerror =
+              reject;
 
-            reader.readAsDataURL(blob);
+            reader.readAsDataURL(
+              blob
+            );
           }
         );
 
-      // Upload to Vercel API
+      // ========================================================
+      // UPLOAD TO VERCEL API
+      // ========================================================
 
       const response =
         await fetch(
@@ -509,16 +713,16 @@ function App() {
         );
       }
 
-      // -----------------------------
+      // ========================================================
       // X CAPTION
-      // -----------------------------
+      // ========================================================
 
       const caption =
         "Just made my Builder ID. Looking forward to building, learning, and connecting at HH Goa 2026. Hoping to see you in Goa! #FrameInGoa";
 
-      // -----------------------------
+      // ========================================================
       // SHARE PAGE
-      // -----------------------------
+      // ========================================================
 
       const shareUrl =
         `${window.location.origin}/api/share` +
@@ -530,9 +734,9 @@ function App() {
             "HH Goa 2026 Builder"
         )}`;
 
-      // -----------------------------
+      // ========================================================
       // OPEN X
-      // -----------------------------
+      // ========================================================
 
       const xUrl =
         "https://twitter.com/intent/tweet" +
@@ -561,12 +765,16 @@ function App() {
     }
   };
 
-  // -----------------------------
+  // ============================================================
   // UI
-  // -----------------------------
+  // ============================================================
 
   return (
     <main className="app">
+
+      {/* ======================================================
+          NAVBAR
+      ====================================================== */}
 
       <nav className="navbar">
 
@@ -580,9 +788,15 @@ function App() {
 
       </nav>
 
+      {/* ======================================================
+          MAIN BUILDER
+      ====================================================== */}
+
       <section className="builder">
 
-        {/* LEFT SIDE */}
+        {/* ====================================================
+            LEFT SIDE
+        ==================================================== */}
 
         <div className="builder-copy">
 
@@ -593,18 +807,23 @@ function App() {
           <h1>
             Build your
             <br />
-            <span>identity.</span>
+            <span>
+              identity.
+            </span>
           </h1>
 
           <p className="description">
-            Your photo. Your stack. Your
-            builder class. One HH Goa
-            identity ready to share.
+            Your photo. Your stack.
+            Your builder class.
+            One HH Goa identity
+            ready to share.
           </p>
 
           <div className="form">
 
-            {/* NAME */}
+            {/* ==================================================
+                NAME
+            ================================================== */}
 
             <label>
               NAME
@@ -622,7 +841,9 @@ function App() {
               />
             </label>
 
-            {/* STACK */}
+            {/* ==================================================
+                STACK
+            ================================================== */}
 
             <label>
               STACK / ROLE
@@ -640,7 +861,9 @@ function App() {
               />
             </label>
 
-            {/* UPLOAD */}
+            {/* ==================================================
+                UPLOAD
+            ================================================== */}
 
             <button
               type="button"
@@ -671,7 +894,9 @@ function App() {
               JPG · PNG · HEIC
             </p>
 
-            {/* DOWNLOAD + SHARE */}
+            {/* ==================================================
+                DOWNLOAD + SHARE
+            ================================================== */}
 
             {preview && (
               <>
@@ -700,13 +925,17 @@ function App() {
 
         </div>
 
-        {/* RIGHT SIDE */}
+        {/* ====================================================
+            RIGHT SIDE
+        ==================================================== */}
 
         <div className="card-area">
 
           <div className="builder-card">
 
-            {/* CARD HEADER */}
+            {/* ==================================================
+                CARD HEADER
+            ================================================== */}
 
             <div className="card-top">
 
@@ -734,7 +963,9 @@ function App() {
 
             </div>
 
-            {/* PHOTO */}
+            {/* ==================================================
+                PHOTO
+            ================================================== */}
 
             <div className="photo-container">
 
@@ -763,7 +994,9 @@ function App() {
 
             </div>
 
-            {/* CARD INFORMATION */}
+            {/* ==================================================
+                CARD INFORMATION
+            ================================================== */}
 
             <div className="card-info">
 
@@ -784,7 +1017,9 @@ function App() {
 
             </div>
 
-            {/* CARD FOOTER */}
+            {/* ==================================================
+                CARD FOOTER
+            ================================================== */}
 
             <div className="card-bottom">
 
