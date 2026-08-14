@@ -5,6 +5,7 @@ Summary: Voice-enabled multilingual RAG system for Hacker House Goa Task 2
 Requires-Python: >=3.11
 Requires-Dist: fastapi
 Requires-Dist: uvicorn[standard]
+Requires-Dist: datasets
 Provides-Extra: dev
 Requires-Dist: pytest; extra == "dev"
 Requires-Dist: ruff; extra == "dev"
