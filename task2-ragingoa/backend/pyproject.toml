@@ -1,0 +1,22 @@
+[project]
+name = "task2-ragingoa-backend"
+version = "0.1.0"
+description = "Voice-enabled multilingual RAG system for Hacker House Goa Task 2"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+    "httpx2"
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

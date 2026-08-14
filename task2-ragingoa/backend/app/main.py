@@ -8,4 +8,5 @@ app = FastAPI(
 
 @app.get("/health")
 def health_check():
-    return {"status": "ok"}
+    return {"status": "ok"} #Popeye says status is ok :0
+ 
