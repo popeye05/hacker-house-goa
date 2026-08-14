@@ -1,0 +1,21 @@
+{
+  "source_lang": "en",
+  "target_lang": "hi",
+  "query_id": "123",
+  "query_type": "DESCRIPTION",
+  "query": "भारत की राजधानी क्या है?",
+  "Eng_Query": "What is the capital of India?",
+  "Answer": "भारत की राजधानी नई दिल्ली है।",
+  "Eng_Answer": "The capital of India is New Delhi.",
+  "passages": [
+    {
+      "passage_text": "भारत की राजधानी नई दिल्ली है।",
+      "is_selected": true
+    },
+    {
+      "passage_text": "मुंबई महाराष्ट्र की राजधानी है।",
+      "is_selected": false
+    }
+  ],
+  "meta": {}
+}
