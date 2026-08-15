@@ -1,51 +1,15 @@
-from collections.abc import Iterator
+
 from typing import Any
 
 from app.models.document import DocumentChunk
 
 
-class MSMARCOXIReader:
-    """
-    Converts raw MSMARCO-XI records into normalized DocumentChunk objects.
-    """
+class MSMARCOXIAdapter:
 
-    @staticmethod
-    def _extract_passage(passage: Any) -> tuple[str, bool]:
-        """
-        Extract passage text and selection information.
-
-        Supports:
-        - plain string passages
-        - passages using `passage_text`
-        - passages using `text`
-        """
-
-        if isinstance(passage, str):
-            return passage, False
-
-        if isinstance(passage, dict):
-            # Real MSMARCO-XI uses passage_text.
-            # Tests/other representations may use text.
-            text = passage.get(
-                "passage_text",
-                passage.get("text", ""),
-            )
-
-            is_selected = bool(
-                passage.get("is_selected", False)
-            )
-
-            return str(text), is_selected
-
-        return str(passage), False
-
-    def _normalize_example(
+    def record_to_documents(
         self,
         example: dict[str, Any],
     ) -> list[DocumentChunk]:
-        """
-        Convert one raw MSMARCO-XI example into DocumentChunk objects.
-        """
 
         query_id = str(example.get("query_id", ""))
         query_type = str(example.get("query_type", ""))
@@ -59,26 +23,50 @@ class MSMARCOXIReader:
         answer = str(example.get("Answer", ""))
         english_answer = str(example.get("Eng_Answer", ""))
 
-        passages = example.get("passages", [])
+        passages = example.get("passages", {})
 
-        if passages is None:
-            passages = []
+        if not isinstance(passages, dict):
+            return []
+
+        translated_passages = passages.get(
+            "Translated_passages",
+            [],
+        )
+
+        selected_flags = passages.get(
+            "is_selected",
+            [],
+        )
+
+        if not isinstance(translated_passages, list):
+            return []
+
+        if not isinstance(selected_flags, list):
+            selected_flags = []
 
         documents: list[DocumentChunk] = []
 
-        for passage_index, passage in enumerate(passages):
-            text, is_selected = self._extract_passage(passage)
+        for passage_index, passage in enumerate(
+            translated_passages
+        ):
+            text = str(passage).strip()
 
-            if not text.strip():
+            if not text:
                 continue
 
-            # Stable ID independent of language.
+            is_selected = False
+
+            if passage_index < len(selected_flags):
+                is_selected = bool(
+                    selected_flags[passage_index]
+                )
+
             document_id = f"{query_id}_{passage_index}"
 
             documents.append(
                 DocumentChunk(
                     id=document_id,
-                    text=text.strip(),
+                    text=text,
                     language=target_lang,
                     query_id=query_id,
                     passage_id=str(passage_index),
@@ -92,48 +80,9 @@ class MSMARCOXIReader:
                         "english_query": english_query,
                         "answer": answer,
                         "english_answer": english_answer,
-                        "meta": example.get("meta", {}),
                     },
                 )
             )
 
         return documents
 
-    def iter_documents(
-        self,
-        records: Iterator[dict[str, Any]],
-    ) -> Iterator[DocumentChunk]:
-        """
-        Lazily convert multiple MSMARCO-XI records.
-
-        This keeps ingestion streaming instead of loading the
-        entire dataset into memory.
-        """
-
-        for record in records:
-            yield from self._normalize_example(record)
-
-
-class MSMARCOXIAdapter:
-    """
-    Public adapter for MSMARCO-XI ingestion.
-    """
-
-    def __init__(self) -> None:
-        self.reader = MSMARCOXIReader()
-
-    def record_to_documents(
-        self,
-        record: dict[str, Any],
-    ) -> list[DocumentChunk]:
-        """Convert one record into normalized documents."""
-
-        return self.reader._normalize_example(record)
-
-    def iter_documents(
-        self,
-        records: Iterator[dict[str, Any]],
-    ) -> Iterator[DocumentChunk]:
-        """Lazily convert records into normalized documents."""
-
-        return self.reader.iter_documents(records)

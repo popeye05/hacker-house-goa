@@ -1,4 +1,6 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
+import json
+from pathlib import Path
 
 import faiss
 import numpy as np
@@ -103,6 +105,81 @@ class FAISSIndex:
             )
 
         return results
+
+    def save(self, directory: str | Path) -> None:
+        """
+        Save the FAISS index and its associated documents to disk.
+
+        Creates:
+            directory/index.faiss
+            directory/documents.json
+        """
+
+        directory = Path(directory)
+        directory.mkdir(parents=True, exist_ok=True)
+
+        index_path = directory / "index.faiss"
+        documents_path = directory / "documents.json"
+
+        faiss.write_index(self.index, str(index_path))
+
+        documents_data = [
+            asdict(document)
+            for document in self.documents
+        ]
+
+        with documents_path.open(
+            "w",
+            encoding="utf-8",
+        ) as file:
+            json.dump(
+                documents_data,
+                file,
+                ensure_ascii=False,
+                indent=2,
+            )
+
+    @classmethod
+    def load(
+        cls,
+        directory: str | Path,
+    ) -> "FAISSIndex":
+        """
+        Load a previously saved FAISS index and its documents.
+        """
+
+        directory = Path(directory)
+
+        index_path = directory / "index.faiss"
+        documents_path = directory / "documents.json"
+
+        if not index_path.exists():
+            raise FileNotFoundError(
+                f"FAISS index not found: {index_path}"
+            )
+
+        if not documents_path.exists():
+            raise FileNotFoundError(
+                f"Documents file not found: {documents_path}"
+            )
+
+        index = faiss.read_index(str(index_path))
+
+        with documents_path.open(
+            "r",
+            encoding="utf-8",
+        ) as file:
+            documents_data = json.load(file)
+
+        instance = cls(dimension=index.d)
+        instance.index = index
+
+        instance.documents = [
+            DocumentChunk(**document)
+            for document in documents_data
+        ]
+
+        return instance
 
     def __len__(self) -> int:
         return len(self.documents)
