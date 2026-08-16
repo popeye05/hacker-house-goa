@@ -3,8 +3,10 @@ from time import perf_counter
 
 from app.generation.context import ContextBuilder
 from app.generation.generator import AnswerGenerator
-from app.retrieval.retriever import Retriever
+from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from app.retrieval.retriever import Retriever
 
 @dataclass(frozen=True)
 class RAGLatency:
@@ -34,7 +36,7 @@ class RAGPipeline:
 
     def __init__(
         self,
-        retriever: Retriever,
+        retriever: "Retriever",
         context_builder: ContextBuilder,
         generator: AnswerGenerator,
     ):
