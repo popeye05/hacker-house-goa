@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import "./App.css";
 import VoiceRecorder from "./components/VoiceRecorder";
 import TranscriptCard from "./components/TranscriptCard";
@@ -32,7 +32,7 @@ function App() {
     const start = performance.now();
 
     try {
-      const response = await fetch("http://localhost:8000/api/query", {
+      const response = await fetch("http://localhost:8000/api/v1/rag/voice?language=en&top_k=5", {
         method: "POST",
         body: formData,
       });
