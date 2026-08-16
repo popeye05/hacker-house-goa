@@ -14,6 +14,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
+        "https://rag-in-goa-nerdrats.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
