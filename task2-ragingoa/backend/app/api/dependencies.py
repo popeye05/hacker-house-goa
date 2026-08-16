@@ -7,9 +7,21 @@ from app.generation.context import ContextBuilder
 from app.generation.generator import SarvamAnswerGenerator
 from app.pipeline.rag import RAGPipeline
 from app.retrieval.retriever import Retriever
+from app.stt.sarvam import SarvamSTT
 
 
+_stt: SarvamSTT | None = None
 _rag_pipeline: RAGPipeline | None = None
+
+def get_stt() -> SarvamSTT:
+    global _stt
+
+    if _stt is None:
+        print("Initializing Sarvam STT...")
+        _stt = SarvamSTT()
+        print("Sarvam STT ready.")
+
+    return _stt
 
 
 def get_rag_pipeline() -> RAGPipeline:
