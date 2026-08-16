@@ -8,6 +8,9 @@ import logoSvg from "./assets/NerdRats RAG IN GOA.svg";
 import footerTrees from "./assets/Trees.png";
 import twitterIcon from "./assets/180-frame-1948754793-54-30952.svg";
 import telegramIcon from "./assets/181-frame-1948754789-54-30958.svg";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+
 function App() {
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState("");
@@ -32,7 +35,7 @@ function App() {
     const start = performance.now();
 
     try {
-      const response = await fetch("http://localhost:8000/api/v1/rag/voice?language=en&top_k=5", {
+      const response = await fetch(`${API_URL}/api/v1/rag/voice?language=en&top_k=5`, {
         method: "POST",
         body: formData,
       });
