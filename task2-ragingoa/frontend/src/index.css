@@ -1,0 +1,98 @@
+@font-face {
+  font-family: 'HHGoa';
+  src: url('./assets/11d07749a96308ac-s.p.1pby6vc151-5p.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'HHGoaBold';
+  src: url('./assets/1a710777613e50ef-s.p.0dsr9mj7kd7mv.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --cream: #F5F1E8;
+  --black: #0B0B0B;
+  --yellow: #FEE101;
+  --pink: #FF0080;
+  --green: #05683A;
+  
+  font-family: 'HHGoa', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  
+  color: var(--black);
+  background-color: var(--cream);
+  
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body, html, #root, button, input, textarea, select {
+  font-family: 'HHGoa', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6, .hero-title .highlight, .badge, .footer-task {
+  font-family: 'HHGoaBold', 'HHGoa', sans-serif;
+  font-weight: bold;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100vh;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: var(--cream);
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background:  #FEE101;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ef0aae;
+}
