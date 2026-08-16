@@ -4,7 +4,7 @@ import time
 from qdrant_client import QdrantClient, models
 
 from app.models.document import DocumentChunk
-from app.retrieval.index import SearchResult
+from app.retrieval.result import SearchResult
 
 
 class QdrantRetriever:

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from app.models.document import DocumentChunk
-from app.retrieval.index import SearchResult
+from app.retrieval.result import SearchResult
 
 @dataclass(frozen=True)
 class Context:
