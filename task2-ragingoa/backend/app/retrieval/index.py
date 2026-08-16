@@ -1,7 +1,7 @@
 from dataclasses import dataclass, asdict
 import json
 from pathlib import Path
-
+from app.retrieval.result import SearchResult
 import faiss
 import numpy as np
 

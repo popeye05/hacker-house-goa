@@ -1,4 +1,5 @@
 
+import argparse
 from pathlib import Path
 
 from app.data.loader import MSMARCOXILoader
@@ -8,20 +9,44 @@ from app.retrieval.index import FAISSIndex
 
 
 
-LANGUAGE = "hi"
-SPLIT = "validation"
-
-MAX_RECORDS = 100
-
 # Number of text passages embedded at once.
 EMBED_BATCH_SIZE = 32
 
-INDEX_DIR = Path("data/index")
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Build a FAISS index from MSMARCO-XI.",
+    )
+    parser.add_argument("--language", default="hi", choices=("hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "ne", "or", "as", "ur", "sa"))
+    parser.add_argument("--split", default="validation", choices=("train", "validation"))
+    parser.add_argument(
+        "--max-records",
+        type=int,
+        default=100,
+        help="Number of dataset records to index; use 0 for the entire split (default: 100).",
+    )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=Path("data/index"),
+        help="Directory for index.faiss and documents.json (default: data/index).",
+    )
+    return parser.parse_args()
 
 
 def main() -> None:
+    args = parse_args()
+
+    if args.max_records < 0:
+        raise ValueError("--max-records must be 0 or greater")
 
     print("Starting MSMARCO-XI index build...")
+    print(f"Dataset: {args.language}/{args.split}")
+    print(
+        "Records: entire split"
+        if args.max_records == 0
+        else f"Records: first {args.max_records}"
+    )
 
 
     # 1. Models
@@ -37,8 +62,8 @@ def main() -> None:
     #dataset
 
     loader = MSMARCOXILoader(
-        split=SPLIT,
-        language=LANGUAGE,
+        split=args.split,
+        language=args.language,
         batch_size=2,
     )
 
@@ -82,7 +107,7 @@ def main() -> None:
     
   
 
-        if total_records >= MAX_RECORDS:
+        if args.max_records and total_records >= args.max_records:
             break
 
     #
@@ -98,12 +123,12 @@ def main() -> None:
         total_documents += len(documents_batch)
 
 
-    INDEX_DIR.mkdir(
+    args.output.mkdir(
         parents=True,
         exist_ok=True,
     )
 
-    index.save(INDEX_DIR)
+    index.save(args.output)
 
     print()
     print("======================================")
@@ -111,7 +136,7 @@ def main() -> None:
     print("======================================")
     print(f"Records processed: {total_records}")
     print(f"Documents indexed: {total_documents}")
-    print(f"Index location: {INDEX_DIR}")
+    print(f"Index location: {args.output}")
     print("======================================")
 
 

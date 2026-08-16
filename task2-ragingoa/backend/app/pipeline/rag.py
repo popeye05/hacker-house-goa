@@ -109,3 +109,10 @@ class RAGPipeline:
             context=context.text,
             latency=latency,
         )
+
+    def retrieve(self, query: str, top_k: int = 5):
+        """Return raw ranked passages for retrieval diagnostics."""
+        if not query.strip():
+            raise ValueError("query cannot be empty")
+
+        return self.retriever.retrieve(query, top_k=top_k)

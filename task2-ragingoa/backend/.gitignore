@@ -5,3 +5,5 @@ __pycache__/
 .env
 .env.*
 !.env.example
+requirements_new.txt
+test_env/

@@ -36,6 +36,20 @@ class RAGResponseModel(BaseModel):
     latency: LatencyResponseModel
 
 
+class RetrievalResultModel(BaseModel):
+    id: str
+    score: float
+    text: str
+    language: str
+    query_id: str
+    is_selected: bool
+
+
+class RetrievalDebugResponseModel(BaseModel):
+    query: str
+    results: list[RetrievalResultModel]
+
+
 class VoiceRAGResponseModel(BaseModel):
     transcript: str
     answer: str
@@ -67,6 +81,33 @@ def answer(
             generation_ms=response.latency.generation_ms,
             total_ms=response.latency.total_ms,
         ),
+    )
+
+
+@router.post(
+    "/rag/debug-retrieval",
+    response_model=RetrievalDebugResponseModel,
+)
+def debug_retrieval(
+    request: RAGRequest,
+    rag: RAGPipeline = Depends(get_rag_pipeline),
+):
+    """Inspect the passages retrieved for a query without invoking the LLM."""
+    results = rag.retrieve(request.query, top_k=request.top_k)
+
+    return RetrievalDebugResponseModel(
+        query=request.query,
+        results=[
+            RetrievalResultModel(
+                id=result.document.id,
+                score=result.score,
+                text=result.document.text,
+                language=result.document.language,
+                query_id=result.document.query_id,
+                is_selected=result.document.is_selected,
+            )
+            for result in results
+        ],
     )
 
 
